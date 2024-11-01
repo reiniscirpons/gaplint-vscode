@@ -1,7 +1,7 @@
 {
     "name": "gaplint",
     "displayName": "gaplint linter",
-    "description": "Linting support for gap files using `gaplint`.",
+    "description": "Linting support for gap files using gaplint.",
     "version": "0.0.1",
     "preview": true,
     "serverInfo": {
@@ -18,8 +18,9 @@
     "bugs": {
         "url": "https://github.com/reiniscirpons/gaplint-vscode/issues"
     },
+    "icon": "logo/logo.png",
     "galleryBanner": {
-        "color": "#55e",
+        "color": "#3414e8",
         "theme": "light"
     },
     "keywords": [
