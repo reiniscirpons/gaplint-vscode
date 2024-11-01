@@ -35,7 +35,13 @@ def _check_files(names: List[str]) -> None:
 
 
 def _update_pip_packages(session: nox.Session) -> None:
-    session.run("pip-compile", "--generate-hashes", "--resolver=backtracking", "--upgrade", "./requirements.in")
+    session.run(
+        "pip-compile",
+        "--generate-hashes",
+        "--resolver=backtracking",
+        "--upgrade",
+        "./requirements.in",
+    )
     session.run(
         "pip-compile",
         "--generate-hashes",
@@ -91,7 +97,13 @@ def _update_npm_packages(session: nox.Session) -> None:
 
 def _setup_template_environment(session: nox.Session) -> None:
     session.install("wheel", "pip-tools")
-    session.run("pip-compile", "--generate-hashes", "--resolver=backtracking", "--upgrade", "./requirements.in")
+    session.run(
+        "pip-compile",
+        "--generate-hashes",
+        "--resolver=backtracking",
+        "--upgrade",
+        "./requirements.in",
+    )
     session.run(
         "pip-compile",
         "--generate-hashes",
@@ -151,7 +163,7 @@ def lint(session: nox.Session) -> None:
 @nox.session()
 def build_package(session: nox.Session) -> None:
     """Builds VSIX package for publishing."""
-    _check_files(["README.md", "LICENSE", "SECURITY.md", "SUPPORT.md"])
+    _check_files(["README.md", "LICENSE", "SUPPORT.md"])
     _setup_template_environment(session)
     session.run("npm", "install", external=True)
     session.run("npm", "run", "vsce-package", external=True)
