@@ -44,7 +44,10 @@
         }
     },
     "activationEvents": [
-        "onLanguage:gap"
+        "onLanguage:gap",
+        "workspaceContains:**/*.g",
+        "workspaceContains:**/*.gi",
+        "workspaceContains:**/*.gd"
     ],
     "main": "./dist/extension.js",
     "scripts": {
