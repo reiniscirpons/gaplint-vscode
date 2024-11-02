@@ -20,7 +20,7 @@
     },
     "icon": "logo/logo.png",
     "galleryBanner": {
-        "color": "#3414e8",
+        "color": "#bbf",
         "theme": "light"
     },
     "keywords": [
@@ -36,6 +36,7 @@
         "Linters"
     ],
     "extensionDependencies": [
+        "ms-python.python",
         "gap.gap"
     ],
     "capabilities": {
