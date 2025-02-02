@@ -585,7 +585,7 @@ def test_linting_example():
                         "start": {"line": 39, "character": 0},
                         "end": {"line": 39, "character": 137},
                     },
-                    "message": "Too long line (81 / 80)",
+                    "message": "Line too long (82 / 80)",
                     "severity": 2,
                     "code": "W002/line-too-long",
                     "source": "gaplint",
