@@ -59,15 +59,19 @@ async function createServer(
 
     // Options to control the language client
     const clientOptions: LanguageClientOptions = {
-        // Register the server for gap documents
+        // Register the server for gap and gaptst documents
         documentSelector: isVirtualWorkspace()
-            ? [{ language: 'gap' }]
+            ? [{ language: 'gap' }, { language: 'gaptst' }]
             : [
-                { scheme: 'file', language: 'gap' },
-                { scheme: 'untitled', language: 'gap' },
-                { scheme: 'vscode-notebook', language: 'gap' },
-                { scheme: 'vscode-notebook-cell', language: 'gap' },
-            ],
+                  { scheme: 'file', language: 'gap' },
+                  { scheme: 'untitled', language: 'gap' },
+                  { scheme: 'vscode-notebook', language: 'gap' },
+                  { scheme: 'vscode-notebook-cell', language: 'gap' },
+                  { scheme: 'file', language: 'gaptst' },
+                  { scheme: 'untitled', language: 'gaptst' },
+                  { scheme: 'vscode-notebook', language: 'gaptst' },
+                  { scheme: 'vscode-notebook-cell', language: 'gaptst' },
+              ],
         outputChannel: outputChannel,
         traceOutputChannel: outputChannel,
         revealOutputChannelOn: RevealOutputChannelOn.Never,

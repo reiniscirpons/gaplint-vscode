@@ -10,15 +10,17 @@ from hamcrest import assert_that, is_
 
 from .lsp_test_client import constants, defaults, session, utils
 
-TEST_FILE_PATH = constants.TEST_DATA / "sample1" / "test1.g"
-TEST_FILE_URI = utils.as_uri(str(TEST_FILE_PATH))
+GAP_TEST_FILE_PATH = constants.TEST_DATA / "sample1" / "test1.g"
+GAP_TEST_FILE_URI = utils.as_uri(str(GAP_TEST_FILE_PATH))
+GAPTST_TEST_FILE_PATH = constants.TEST_DATA / "sample1" / "test1.tst"
+GAPTST_TEST_FILE_URI = utils.as_uri(str(GAPTST_TEST_FILE_PATH))
 SERVER_INFO = utils.get_server_info_defaults()
 TIMEOUT = 10  # 10 seconds
 
 
-def test_linting_example():
-    """Test to linting on file open."""
-    contents = TEST_FILE_PATH.read_text()
+def test_gap_linting_example():
+    """Test to linting on gap file open."""
+    contents = GAP_TEST_FILE_PATH.read_text()
 
     actual = []
     with session.LspSession() as ls_session:
@@ -36,7 +38,7 @@ def test_linting_example():
         ls_session.notify_did_open(
             {
                 "textDocument": {
-                    "uri": TEST_FILE_URI,
+                    "uri": GAP_TEST_FILE_URI,
                     "languageId": "gap",
                     "version": 1,
                     "text": contents,
@@ -48,7 +50,7 @@ def test_linting_example():
         done.wait(TIMEOUT)
 
         expected = {
-            "uri": TEST_FILE_URI,
+            "uri": GAP_TEST_FILE_URI,
             "diagnostics": [
                 {
                     "range": {
@@ -698,6 +700,86 @@ def test_linting_example():
                     "message": "Exactly one space required after comma",
                     "severity": 2,
                     "code": "W010/space-after-comma",
+                    "source": "gaplint",
+                },
+            ],
+        }
+
+    assert_that(actual, is_(expected))
+
+
+def test_gaptst_linting_example():
+    """Test to linting on gaptst file open."""
+    contents = GAPTST_TEST_FILE_PATH.read_text()
+
+    actual = []
+    with session.LspSession() as ls_session:
+        ls_session.initialize(defaults.VSCODE_DEFAULT_INITIALIZE)
+
+        done = Event()
+
+        def _handler(params):
+            nonlocal actual
+            actual = params
+            done.set()
+
+        ls_session.set_notification_callback(session.PUBLISH_DIAGNOSTICS, _handler)
+
+        ls_session.notify_did_open(
+            {
+                "textDocument": {
+                    "uri": GAPTST_TEST_FILE_URI,
+                    "languageId": "gaptst",
+                    "version": 1,
+                    "text": contents,
+                }
+            }
+        )
+
+        # wait for some time to receive all notifications
+        done.wait(TIMEOUT)
+
+        expected = {
+            "uri": GAPTST_TEST_FILE_URI,
+            "diagnostics": [
+                {
+                    "range": {
+                        "start": {"line": 13, "character": 0},
+                        "end": {"line": 13, "character": 155},
+                    },
+                    "message": "Wrong whitespace around operator +",
+                    "severity": 2,
+                    "code": "W020/whitespace-op-plus",
+                    "source": "gaplint",
+                },
+                {
+                    "range": {
+                        "start": {"line": 33, "character": 0},
+                        "end": {"line": 33, "character": 147},
+                    },
+                    "message": "No space after comment",
+                    "severity": 2,
+                    "code": "W008/no-space-after-comment",
+                    "source": "gaplint",
+                },
+                {
+                    "range": {
+                        "start": {"line": 33, "character": 0},
+                        "end": {"line": 33, "character": 166},
+                    },
+                    "message": "At least 2 spaces before comment",
+                    "severity": 2,
+                    "code": "W009/not-enough-space-before-comment",
+                    "source": "gaplint",
+                },
+                {
+                    "range": {
+                        "start": {"line": 33, "character": 0},
+                        "end": {"line": 33, "character": 152},
+                    },
+                    "message": "No space allowed after bracket",
+                    "severity": 2,
+                    "code": "W012/space-after-bracket",
                     "source": "gaplint",
                 },
             ],
