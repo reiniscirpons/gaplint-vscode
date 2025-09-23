@@ -155,7 +155,7 @@
         "@vscode/vsce": "^3.4.2",
         "eslint": "^9.32.0",
         "glob": "^11.0.1",
-        "prettier": "^3.5.3",
+        "prettier": "^3.6.2",
         "typescript": "^5.8.2",
         "ts-loader": "^9.5.2",
         "webpack": "^5.98.0",
