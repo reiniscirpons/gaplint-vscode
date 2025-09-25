@@ -11,4 +11,4 @@
 # Required packages
 pygls
 packaging
-gaplint
+gaplint==1.6.1
