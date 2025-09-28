@@ -4,9 +4,9 @@
 
 
 import atexit
-import contextlib
 import io
 import json
+import os
 import pathlib
 import subprocess
 import threading
@@ -100,10 +100,14 @@ class JsonRpc:
 
     def close(self):
         """Closes the underlying streams."""
-        with contextlib.suppress(Exception):
+        try:
             self._reader.close()
-        with contextlib.suppress(Exception):
+        except:  # pylint: disable=bare-except
+            pass
+        try:
             self._writer.close()
+        except:  # pylint: disable=bare-except
+            pass
 
     def send_data(self, data):
         """Send given data in JSON-RPC format."""
@@ -132,18 +136,31 @@ class ProcessManager:
     def stop_all_processes(self):
         """Send exit command to all processes and shutdown transport."""
         for i in self._rpc.values():
-            with contextlib.suppress(Exception):
+            try:
                 i.send_data({"id": str(uuid.uuid4()), "method": "exit"})
+            except:  # pylint: disable=bare-except
+                pass
         self._thread_pool.shutdown(wait=False)
 
-    def start_process(self, workspace: str, args: Sequence[str], cwd: str) -> None:
+    def start_process(
+        self,
+        workspace: str,
+        args: Sequence[str],
+        cwd: str,
+        env: Optional[Dict[str, str]] = None,
+    ) -> None:
         """Starts a process and establishes JSON-RPC communication over stdio."""
+        _env = os.environ.copy()
+        if env is not None:
+            _env.update(env)
+
         # pylint: disable=consider-using-with
         proc = subprocess.Popen(
             args,
             cwd=cwd,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
+            env=_env,
         )
         self._processes[workspace] = proc
         self._rpc[workspace] = create_json_rpc(proc.stdout, proc.stdin)
@@ -182,24 +199,28 @@ def _get_json_rpc(workspace: str) -> Union[JsonRpc, None]:
 
 
 def get_or_start_json_rpc(
-    workspace: str, interpreter: Sequence[str], cwd: str
+    workspace: str,
+    interpreter: Sequence[str],
+    cwd: str,
+    env: Optional[Dict[str, str]] = None,
 ) -> Union[JsonRpc, None]:
     """Gets an existing JSON-RPC connection or starts one and return it."""
     res = _get_json_rpc(workspace)
     if not res:
         args = [*interpreter, RUNNER_SCRIPT]
-        _process_manager.start_process(workspace, args, cwd)
+        _process_manager.start_process(workspace, args, cwd, env)
         res = _get_json_rpc(workspace)
     return res
 
 
+# pylint: disable=too-few-public-methods
 class RpcRunResult:
     """Object to hold result from running tool over RPC."""
 
-    def __init__(self, stdout: str, stderr: str, exception: Optional[str] = None):
-        self.stdout: str = stdout
-        self.stderr: str = stderr
-        self.exception: Optional[str] = exception
+    def __init__(self, stdout: str, stderr: str, exception: str = None):
+        self.stdout = stdout
+        self.stderr = stderr
+        self.exception = exception
 
 
 # pylint: disable=too-many-arguments
@@ -211,11 +232,12 @@ def run_over_json_rpc(
     use_stdin: bool,
     cwd: str,
     source: str = None,
+    env: Optional[Dict[str, str]] = None,
 ) -> RpcRunResult:
     """Uses JSON-RPC to execute a command."""
-    rpc: Union[JsonRpc, None] = get_or_start_json_rpc(workspace, interpreter, cwd)
+    rpc: Union[JsonRpc, None] = get_or_start_json_rpc(workspace, interpreter, cwd, env)
     if not rpc:
-        raise Exception("Failed to run over JSON-RPC.")
+        raise ConnectionError("Failed to run over JSON-RPC.")
 
     msg_id = str(uuid.uuid4())
     msg = {
@@ -238,8 +260,8 @@ def run_over_json_rpc(
             "", f"Invalid result for request: {json.dumps(msg, indent=4)}"
         )
 
-    result = data["result"] if "result" in data else ""
     if "error" in data:
+        result = data["result"] if "result" in data else ""
         error = data["error"]
 
         if data.get("exception", False):

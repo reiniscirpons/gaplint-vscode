@@ -14,8 +14,8 @@ from pyls_jsonrpc.dispatchers import MethodDispatcher
 from pyls_jsonrpc.endpoint import Endpoint
 from pyls_jsonrpc.streams import JsonRpcStreamReader, JsonRpcStreamWriter
 
+from . import defaults
 from .constants import PROJECT_ROOT
-from .defaults import VSCODE_DEFAULT_INITIALIZE
 
 LSP_EXIT_TIMEOUT = 5000
 
@@ -57,7 +57,9 @@ class LspSession(MethodDispatcher):
             env=os.environ,
             shell="WITH_COVERAGE" in os.environ,
         )
-
+        # TODO(reiniscirpons): might be a possible issue with below line,
+        # something to do with GC and valid file descriptors. Since its only a
+        # test fixture, probably ok to ignore?
         self._writer = JsonRpcStreamWriter(os.fdopen(self._sub.stdin.fileno(), "wb"))
         self._reader = JsonRpcStreamReader(os.fdopen(self._sub.stdout.fileno(), "rb"))
 
@@ -86,7 +88,7 @@ class LspSession(MethodDispatcher):
     ):
         """Sends the initialize request to LSP server."""
         if initialize_params is None:
-            initialize_params = VSCODE_DEFAULT_INITIALIZE
+            initialize_params = defaults.vscode_initialize_defaults()
         server_initialized = Event()
 
         def _after_initialize(fut):
@@ -100,7 +102,7 @@ class LspSession(MethodDispatcher):
             params=(
                 initialize_params
                 if initialize_params is not None
-                else VSCODE_DEFAULT_INITIALIZE
+                else defaults.vscode_initialize_defaults()
             ),
             handle_response=_after_initialize,
         )
@@ -118,7 +120,8 @@ class LspSession(MethodDispatcher):
             if should_exit:
                 self.exit_lsp(exit_timeout)
 
-        self._send_request("shutdown", handle_response=_after_shutdown)
+        fut = self._send_request("shutdown", handle_response=_after_shutdown)
+        return fut.result()
 
     def exit_lsp(self, exit_timeout=LSP_EXIT_TIMEOUT):
         """Handles LSP server process exit."""
@@ -142,7 +145,7 @@ class LspSession(MethodDispatcher):
         self._send_notification("textDocument/didClose", params=did_close_params)
 
     def text_document_formatting(self, formatting_params):
-        """Sends text document references request to LSP server."""
+        """Sends text document format request to LSP server."""
         fut = self._send_request("textDocument/formatting", params=formatting_params)
         return fut.result()
 

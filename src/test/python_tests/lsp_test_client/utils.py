@@ -3,11 +3,12 @@
 """
 Utility functions for use with tests.
 """
+import contextlib
 import json
 import os
 import pathlib
 import platform
-from random import choice
+import random
 
 from .constants import PROJECT_ROOT
 
@@ -24,25 +25,18 @@ def as_uri(path: str) -> str:
     return normalizecase(pathlib.Path(path).as_uri())
 
 
-class PythonFile:
-    """Create python file on demand for testing."""
-
-    def __init__(self, contents, root):
-        self.contents = contents
-        self.basename = "".join(
-            choice("abcdefghijklmnopqrstuvwxyz") if i < 8 else ".py" for i in range(9)
-        )
-        self.fullpath = os.path.join(root, self.basename)
-
-    def __enter__(self):
-        """Creates a python file for  testing."""
-        with open(self.fullpath, "w", encoding="utf8") as py_file:
-            py_file.write(self.contents)
-        return self
-
-    def __exit__(self, typ, value, _tb):
-        """Cleans up and deletes the python file."""
-        os.unlink(self.fullpath)
+@contextlib.contextmanager
+def python_file(contents: str, root: pathlib.Path, ext: str = ".py"):
+    """Creates a temporary Python file."""
+    basename = (
+        "".join(random.choice("abcdefghijklmnopqrstuvwxyz") for _ in range(9)) + ext
+    )
+    fullpath = root / basename
+    try:
+        fullpath.write_text(contents)
+        yield fullpath
+    finally:
+        os.unlink(str(fullpath))
 
 
 def get_server_info_defaults():
@@ -69,5 +63,7 @@ def get_initialization_options():
 
     setting["workspace"] = as_uri(str(PROJECT_ROOT))
     setting["interpreter"] = []
+    setting["cwd"] = str(PROJECT_ROOT)
+    setting["extraPaths"] = []
 
-    return {"settings": [setting]}
+    return {"settings": [setting], "globalSettings": setting}

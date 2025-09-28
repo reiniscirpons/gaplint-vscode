@@ -79,14 +79,37 @@
                     "scope": "resource",
                     "type": "array"
                 },
-                "gaplint.path": {
-                    "default": [],
-                    "description": "When set to a path pointing to a gaplint binary, the extension will use that. NOTE: Using this option may slowdown server response time.",
+                "gaplint.cwd": {
+                    "default": "${workspaceFolder}",
+                    "markdownDescription": "%settings.cwd.description%",
                     "scope": "resource",
+                    "type": "string",
+                    "examples": [
+                        "${workspaceFolder}/src",
+                        "${fileDirname}"
+                    ]
+                },
+                "gaplint.enabled": {
+                    "default": true,
+                    "markdownDescription": "%settings.enabled.description%",
+                    "scope": "resource",
+                    "type": "boolean"
+                },
+                "gaplint.ignorePatterns": {
+                    "default": [],
+                    "markdownDescription": "%settings.ignorePatterns.description%",
                     "items": {
                         "type": "string"
                     },
-                    "type": "array"
+                    "scope": "resource",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "examples": [
+                        [
+                            "no_lint/*.gi",
+                            "do_not_lint_this_folder/**/*.g"
+                        ]
+                    ]
                 },
                 "gaplint.importStrategy": {
                     "default": "useBundled",
@@ -99,7 +122,7 @@
                         "Always use the bundled version of `gaplint`.",
                         "Use `gaplint` from environment, fallback to bundled version only if `gaplint` not available in the environment."
                     ],
-                    "scope": "window",
+                    "scope": "resource",
                     "type": "string"
                 },
                 "gaplint.interpreter": {
@@ -110,6 +133,56 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "gaplint.lintOnChange": {
+                    "default": false,
+                    "markdownDescription": "%settings.lintOnChange.description%",
+                    "scope": "machine",
+                    "type": "boolean",
+                    "tags": [
+                        "experimental"
+                    ]
+                },
+                "gaplint.path": {
+                    "default": [],
+                    "description": "When set to a path pointing to a gaplint binary, the extension will use that. NOTE: Using this option may slowdown server response time.",
+                    "scope": "resource",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array",
+                    "examples": [
+                        [
+                            "~/global_env/gaplint"
+                        ],
+                        [
+                            "~/.env/python",
+                            "-m",
+                            "gaplint"
+                        ]
+                    ]
+                },
+                "gaplint.severity": {
+                    "default": {
+                        "convention": "Information",
+                        "error": "Error",
+                        "fatal": "Error",
+                        "refactor": "Hint",
+                        "warning": "Warning",
+                        "info": "Information"
+                    },
+                    "additionalProperties": {
+                        "type": "string",
+                        "enum": [
+                            "Error",
+                            "Hint",
+                            "Information",
+                            "Warning"
+                        ]
+                    },
+                    "markdownDescription": "%settings.severity.description%",
+                    "scope": "resource",
+                    "type": "object"
                 },
                 "gaplint.showNotifications": {
                     "default": "off",
@@ -155,8 +228,8 @@
         "@typescript-eslint/eslint-plugin": "^8.44.1",
         "@typescript-eslint/parser": "^8.44.1",
         "@vscode/test-electron": "^2.5.2",
-        "@vscode/vsce": "^3.6.1",
-        "chai": "^6.0.1",
+        "@vscode/vsce": "^3.6.2",
+        "chai": "^6.2.0",
         "eslint": "^9.36.0",
         "glob": "^11.0.3",
         "mocha": "^11.7.2",
