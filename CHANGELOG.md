@@ -6,7 +6,7 @@
 - Add support for range highlighting, with fallback for older versions.
 - Add new config options for overriding severity.
 - Add warning message if detected `gaplint` version is too old.
-- Fix bundling issue (`./bunlded/libs` directory needs to be purged in between builds.).
+- Fix bundling issue (`./bundled/libs` directory needs to be purged in between builds.).
 
 ### v0.0.2
 
