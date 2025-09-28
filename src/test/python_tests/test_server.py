@@ -8,7 +8,7 @@ from threading import Event
 
 from hamcrest import assert_that, is_
 
-from .lsp_test_client import constants, defaults, session, utils
+from .lsp_test_client import constants, session, utils
 
 GAP_TEST_FILE_PATH = constants.TEST_DATA / "sample1" / "test1.g"
 GAP_TEST_FILE_URI = utils.as_uri(str(GAP_TEST_FILE_PATH))

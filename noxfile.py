@@ -31,7 +31,7 @@ def _check_files(names: List[str]) -> None:
         file_path = root_dir / name
         lines: List[str] = file_path.read_text().splitlines()
         if any(line for line in lines if line.startswith("# TODO:")):
-            raise Exception(f"Please update {os.fspath(file_path)}.")
+            raise RuntimeError(f"Please update {os.fspath(file_path)}.")
 
 
 def _update_pip_packages(session: nox.Session) -> None:
@@ -121,11 +121,13 @@ def lint(session: nox.Session) -> None:
     session.install("-r", "src/test/python_tests/requirements.txt")
 
     session.install("pylint")
-    session.run("pylint", "-d", "W0511", "./bundled/tool")
+    session.run("pylint", "-d", "W0511", "-d", "R0801", "./bundled/tool")
     session.run(
         "pylint",
         "-d",
         "W0511",
+        "-d",
+        "R0801",
         "--ignore=./src/test/python_tests/test_data",
         "./src/test/python_tests",
     )

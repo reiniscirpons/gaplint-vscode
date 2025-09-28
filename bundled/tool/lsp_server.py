@@ -11,7 +11,7 @@ import re
 import sys
 import sysconfig
 import traceback
-from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 
 # **********************************************************
@@ -185,10 +185,7 @@ def _get_severity(
     symbol: str, code: str, code_type: str, severity: Dict[str, str]
 ) -> lsp.DiagnosticSeverity:
     """Converts severity provided by linter to LSP specific value."""
-    symbol_to_severity = {
-        "M": "error",
-        "W": "warning"
-    }
+    symbol_to_severity = {"M": "error", "W": "warning"}
     value = (
         severity.get(code, None)
         or severity.get(code_type, None)
@@ -206,15 +203,16 @@ def _get_severity(
 DIAGNOSTIC_REGEXES = [
     re.compile(regex)
     for regex in (
-        r".*:(?P<line>\d+)-(?P<endLine>\d+):(?P<column>\d+)-(?P<endColumn>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",
-        r".*:(?P<line>\d+):(?P<column>\d+)-(?P<endColumn>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",
-        r".*:(?P<line>\d+):(?P<column>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",
-        r".*:(?P<line>\d+)-(?P<endLine>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",
-        r".*:(?P<line>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",
+        r".*:(?P<line>\d+)-(?P<endLine>\d+):(?P<column>\d+)-(?P<endColumn>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",  # pylint: disable=line-too-long
+        r".*:(?P<line>\d+):(?P<column>\d+)-(?P<endColumn>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",  # pylint: disable=line-too-long
+        r".*:(?P<line>\d+):(?P<column>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",  # pylint: disable=line-too-long
+        r".*:(?P<line>\d+)-(?P<endLine>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",  # pylint: disable=line-too-long
+        r".*:(?P<line>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",  # pylint: disable=line-too-long
     )
 ]
 
 
+# pylint: disable=too-many-locals
 def _parse_output(
     content: str,
     severity: Dict[str, str],
@@ -269,7 +267,9 @@ def _parse_output(
                 end=end_position,
             ),
             message=data["message"],
-            severity=_get_severity(data["symbol"], data["code"], data["code_type"], severity),
+            severity=_get_severity(
+                data["symbol"], data["code"], data["code_type"], severity
+            ),
             code=f"{data["code"]}/{data["code_type"]}",
             source=TOOL_DISPLAY,
         )
@@ -333,8 +333,9 @@ def on_shutdown(_params: Optional[Any] = None) -> None:
 def _log_version_info() -> None:
     for value in WORKSPACE_SETTINGS.values():
         try:
-            from packaging.version import parse as parse_version
+            # pylint: disable=import-outside-toplevel
             from packaging.version import InvalidVersion
+            from packaging.version import parse as parse_version
 
             settings = copy.deepcopy(value)
             # NOTE(reiniscirpons): using the --version parameter is super
@@ -344,7 +345,9 @@ def _log_version_info() -> None:
             result = _run_tool(["--version"], settings)
             code_workspace = settings["workspaceFS"]
             log_to_output(
-                f"Version info for linter running for {code_workspace}:\r\nstdout: {result.stdout}\r\nstderr: {result.stderr}"
+                f"Version info for linter running for {code_workspace}:\r\n"
+                f"stdout: {result.stdout}\r\n"
+                f"stderr: {result.stderr}"
             )
 
             # This is text we get from running `pylint --version`
@@ -367,7 +370,9 @@ def _log_version_info() -> None:
             # Check if we support ranges
             result_ranges = _run_tool(["--ranges"], settings)
             log_to_output(
-                f"Ranges support info for linter running for {code_workspace}:\r\nstdout: {result_ranges.stdout}\r\nstderr: {result_ranges.stderr}"
+                f"Ranges support info for linter running for {code_workspace}:\r\n"
+                f"stdout: {result_ranges.stdout}\r\n"
+                f"stderr: {result_ranges.stderr}"
             )
             # If dont support ranges, we expect to see something like:
             # usage: gaplint [options]
@@ -383,8 +388,9 @@ def _log_version_info() -> None:
 
             if version < parse_version("1.5.0") and supports_ranges:
                 log_to_output(
-                    f"WARNING, detected version {TOOL_MODULE}=={actual_version}, but tool supports ranges (available from 1.5.0)\r\n"
-                    f"Automatically bumping detected version to 1.5.0\r\n"
+                    f"WARNING, detected version {TOOL_MODULE}=={actual_version}, "
+                    f"but tool supports ranges (available from 1.5.0)\r\n"
+                    f"Automatically bumping detected version to 1.5.0"
                 )
                 version = parse_version("1.5.0")
 
@@ -516,6 +522,7 @@ def get_cwd(settings: Dict[str, Any], document: Optional[workspace.Document]) ->
     return settings["cwd"]
 
 
+# pylint: disable=too-many-branches,too-many-statements
 def _run_tool_on_document(
     document: workspace.Document,
     use_stdin: bool = False,
