@@ -24,4 +24,6 @@ noxfile.py
 **/requirements.txt
 **/requirements.in
 **/tool/_debug_server.py
-logo/logo.xcf
+build/**
+.mypy_cache/**
+.tox/**
