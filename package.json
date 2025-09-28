@@ -1,7 +1,7 @@
 {
     "name": "gaplint",
     "displayName": "gaplint linter",
-    "description": "Linting support for gap files using gaplint.",
+    "description": "%extension.description%",
     "version": "0.0.2",
     "preview": true,
     "serverInfo": {
@@ -72,7 +72,7 @@
             "properties": {
                 "gaplint.args": {
                     "default": [],
-                    "description": "Arguments passed in. Each argument is a separate item in the array.",
+                    "markdownDescription": "%settings.args.description%",
                     "items": {
                         "type": "string"
                     },
@@ -113,21 +113,21 @@
                 },
                 "gaplint.importStrategy": {
                     "default": "useBundled",
-                    "description": "Defines where `gaplint` is imported from. This setting may be ignored if `gaplint.path` is set.",
+                    "markdownDescription": "%settings.importStrategy.description%",
                     "enum": [
                         "useBundled",
                         "fromEnvironment"
                     ],
                     "enumDescriptions": [
-                        "Always use the bundled version of `gaplint`.",
-                        "Use `gaplint` from environment, fallback to bundled version only if `gaplint` not available in the environment."
+                        "%settings.importStrategy.useBundled.description%",
+                        "%settings.importStrategy.fromEnvironment.description%"
                     ],
                     "scope": "resource",
                     "type": "string"
                 },
                 "gaplint.interpreter": {
                     "default": [],
-                    "description": "When set to a path to python executable, extension will use that to launch the server and any subprocess.",
+                    "markdownDescription": "%settings.interpreter.description%",
                     "scope": "resource",
                     "items": {
                         "type": "string"
@@ -145,7 +145,7 @@
                 },
                 "gaplint.path": {
                     "default": [],
-                    "description": "When set to a path pointing to a gaplint binary, the extension will use that. NOTE: Using this option may slowdown server response time.",
+                    "markdownDescription": "%settings.path.description%",
                     "scope": "resource",
                     "items": {
                         "type": "string"
@@ -164,12 +164,8 @@
                 },
                 "gaplint.severity": {
                     "default": {
-                        "convention": "Information",
                         "error": "Error",
-                        "fatal": "Error",
-                        "refactor": "Hint",
-                        "warning": "Warning",
-                        "info": "Information"
+                        "warning": "Warning"
                     },
                     "additionalProperties": {
                         "type": "string",
@@ -186,7 +182,7 @@
                 },
                 "gaplint.showNotifications": {
                     "default": "off",
-                    "description": "Controls when notifications are shown by this extension.",
+                    "markdownDescription": "%settings.showNotifications.description%",
                     "enum": [
                         "off",
                         "onError",
@@ -194,10 +190,10 @@
                         "always"
                     ],
                     "enumDescriptions": [
-                        "All notifications are turned off, any errors or warning are still available in the logs.",
-                        "Notifications are shown only in the case of an error.",
-                        "Notifications are shown for errors and warnings.",
-                        "Notifications are show for anything that the server chooses to show."
+                        "%settings.showNotifications.off.description%",
+                        "%settings.showNotifications.onError.description%",
+                        "%settings.showNotifications.onWarning.description%",
+                        "%settings.showNotifications.always.description%"
                     ],
                     "scope": "machine",
                     "type": "string"
@@ -206,7 +202,7 @@
         },
         "commands": [
             {
-                "title": "Restart Server",
+                "title": "%command.restartServer%",
                 "category": "gaplint linter",
                 "command": "gaplint.restart"
             }

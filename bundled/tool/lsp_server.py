@@ -182,23 +182,35 @@ def _linting_helper(document: workspace.Document) -> List[lsp.Diagnostic]:
 
 
 def _get_severity(
-    code: str, code_type: str, severity: Dict[str, str]
+    symbol: str, code: str, code_type: str, severity: Dict[str, str]
 ) -> lsp.DiagnosticSeverity:
     """Converts severity provided by linter to LSP specific value."""
-    # TODO: (reiniscirpons) Maybe remove severity list here and in setting.ts?
-    if code_type == "M":
-        return lsp.DiagnosticSeverity.Error
+    symbol_to_severity = {
+        "M": "error",
+        "W": "warning"
+    }
+    value = (
+        severity.get(code, None)
+        or severity.get(code_type, None)
+        or severity.get(symbol, None)
+        or severity.get(symbol_to_severity.get(symbol, None), "Warning")
+    )
+    try:
+        return lsp.DiagnosticSeverity[value]
+    except KeyError:
+        pass
+
     return lsp.DiagnosticSeverity.Warning
 
 
 DIAGNOSTIC_REGEXES = [
     re.compile(regex)
     for regex in (
-        r".*:(?P<line>\d+)-(?P<endLine>\d+):(?P<column>\d+)-(?P<endColumn>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<type>\w)[^\]\r\n]*)\]",
-        r".*:(?P<line>\d+):(?P<column>\d+)-(?P<endColumn>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<type>\w)[^\]\r\n]*)\]",
-        r".*:(?P<line>\d+):(?P<column>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<type>\w)[^\]\r\n]*)\]",
-        r".*:(?P<line>\d+)-(?P<endLine>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<type>\w)[^\]\r\n]*)\]",
-        r".*:(?P<line>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<type>\w)[^\]\r\n]*)\]",
+        r".*:(?P<line>\d+)-(?P<endLine>\d+):(?P<column>\d+)-(?P<endColumn>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",
+        r".*:(?P<line>\d+):(?P<column>\d+)-(?P<endColumn>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",
+        r".*:(?P<line>\d+):(?P<column>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",
+        r".*:(?P<line>\d+)-(?P<endLine>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",
+        r".*:(?P<line>\d+): (?P<message>[^\[\r\n]*) \[(?P<code>(?P<symbol>\w)\d+)/(?P<code_type>[^\]\r\n]*)\]",
     )
 ]
 
@@ -257,8 +269,8 @@ def _parse_output(
                 end=end_position,
             ),
             message=data["message"],
-            severity=_get_severity(data["code"], data["type"], severity),
-            code=data["code"],
+            severity=_get_severity(data["symbol"], data["code"], data["code_type"], severity),
+            code=f"{data["code"]}/{data["code_type"]}",
             source=TOOL_DISPLAY,
         )
         diagnostics.append(diagnostic)
@@ -412,12 +424,8 @@ def _get_global_defaults():
         "severity": GLOBAL_SETTINGS.get(
             "severity",
             {
-                "convention": "Information",
                 "error": "Error",
-                "fatal": "Error",
-                "refactor": "Hint",
                 "warning": "Warning",
-                "info": "Information",
             },
         ),
         "ignorePatterns": [],

@@ -1,0 +1,20 @@
+{
+    "extension.description": "Linting support for `gap` files using `gaplint`.",
+    "command.restartServer": "Restart Server",
+    "settings.args.description": "Arguments passed to `gaplint` for linting `gap` and `gaptst` files. Each argument should be provided as a separate string in the array. \n Examples:  \n- `\"gaplint.args\": [\"--config-file=<file>\"]` \n - `\"gaplint.args\": [\"--disable=W014\", \"--columns=120\"]`",
+    "settings.cwd.description": "Sets the current working directory used to lint `gap` or `gaptst` files with `gaplint`. By default, it uses the root directory of the workspace `${workspaceFolder}`. You can set it to `${fileDirname}` to use the parent folder of the file being linted as the working directory for gaplint.",
+    "settings.enabled.description": "Enable/disable linting `gap` and `gaptst` files with `gaplint`.",
+    "settings.severity.description": "Mapping of `gaplint` message types to VS Code's diagnostic severity levels as displayed in the Problems window. You can also use it to override specific gaplint error codes. \n Example:</br> `{\"error\": \"Error\", \"warning\": \"Warning\", \"W014\": \"Error\", \"align-assignments\": \"Information\"}`",
+    "settings.lintOnChange.description": "Enable linting `gap` and `gaplint` files with `gaplint` as you type. Note: Not yet implemented.",
+    "settings.path.description": "Path or command to be used by the extension to lint `gap` and `gaptst` files with `gaplint`. Accepts an array of a single or multiple strings. If passing a command, each argument should be provided as a separate string in the array. If set to `[\"gaplint\"]`, it will use the version of `gaplint` available in the `PATH` environment variable. Note: Using this option may slowdown linting. \nExamples: \n- `[\"~/global_env/gaplint\"]` \n- `[\"conda\", \"run\", \"-n\", \"lint_env\", \"python\", \"-m\", \"gaplint\"]` \n- `[\"gaplint\"]`",
+    "settings.ignorePatterns.description": "Configure [glob patterns](https://docs.python.org/3/library/fnmatch.html) as supported by the fnmatch Python library to exclude files or folders from being linted with gaplint.",
+    "settings.importStrategy.description": "Defines which `gaplint` binary to be used to lint `gap` and `gaptst` files. When set to `useBundled`, the extension will use the `gaplint` binary that is shipped with the extension. When set to `fromEnvironment`, the extension will attempt to use the `gaplint` binary and all dependencies that are available in the currently selected environment. Note: If the extension can't find a valid `gaplint` binary in the selected environment, it will fallback to using the `gaplint` binary that is shipped with the extension The `gaplint.path` setting may also be ignored when this setting is set to `fromEnvironment`.",
+    "settings.importStrategy.useBundled.description": "Always use the bundled version of `gaplint` shipped with the extension.",
+    "settings.importStrategy.fromEnvironment.description": "Use `gaplint` from the selected environment. If the extension fails to find a valid `gaplint` binary, it will fallback to using the bundled version of `gaplint`.",
+    "settings.interpreter.description": "Path to a Python executable or a command that will be used to launch the `gaplint` server and any subprocess. Accepts an array of a single or multiple strings.  When set to `[]`, the extension will use the path to the selected Python interpreter. If passing a command, each argument should be provided as a separate string in the array.",
+    "settings.showNotifications.description": "Controls when notifications are shown by this extension.  Accepted values are `onError`, `onWarning`, `always` and `off`.",
+    "settings.showNotifications.off.description": "Never display a notification. Any errors or warning are still available in the logs.",
+    "settings.showNotifications.onError.description": "Show notifications for errors.",
+    "settings.showNotifications.onWarning.description": "Show notifications for errors and warnings.",
+    "settings.showNotifications.always.description": "Show all notifications."
+}

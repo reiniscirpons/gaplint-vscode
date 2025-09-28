@@ -12,12 +12,8 @@ import { ISettings, getWorkspaceSettings, isLintOnChangeEnabled } from '../../..
 import * as vscodeapi from '../../../../common/vscodeapi';
 
 const DEFAULT_SEVERITY: Record<string, string> = {
-  convention: 'Information',
   error: 'Error',
-  fatal: 'Error',
-  refactor: 'Hint',
   warning: 'Warning',
-  info: 'Information',
 };
 
 suite('Settings Tests', () => {

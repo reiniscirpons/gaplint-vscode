@@ -9,12 +9,8 @@ import { getConfiguration, getWorkspaceFolders } from './vscodeapi';
 import { getInterpreterFromSetting } from './utilities';
 
 const DEFAULT_SEVERITY: Record<string, string> = {
-    convention: 'Information',
     error: 'Error',
-    fatal: 'Error',
-    refactor: 'Hint',
     warning: 'Warning',
-    info: 'Information',
 };
 export interface ISettings {
     cwd: string;
