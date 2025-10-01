@@ -222,7 +222,7 @@
         "@types/sinon": "^17.0.4",
         "@types/vscode": "1.78.0",
         "@typescript-eslint/eslint-plugin": "^8.44.1",
-        "@typescript-eslint/parser": "^8.44.1",
+        "@typescript-eslint/parser": "^8.45.0",
         "@vscode/test-electron": "^2.5.2",
         "@vscode/vsce": "^3.6.2",
         "chai": "^6.2.0",
