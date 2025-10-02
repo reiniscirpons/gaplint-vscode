@@ -2,7 +2,7 @@
     "name": "gaplint",
     "displayName": "gaplint linter",
     "description": "%extension.description%",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "preview": true,
     "serverInfo": {
         "name": "gaplint linter",

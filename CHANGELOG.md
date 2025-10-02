@@ -1,5 +1,11 @@
 # Change Log
 
+### v0.1.1
+
+- Fix a Python f-string error in `lsp_server.py` which caused runtime errors on
+  more recent versions of Python runtime.
+- Update README to include common troubleshooting steps.
+
 ### v0.1.0
 
 - Bump `gaplint` to `1.6.1`.
