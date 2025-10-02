@@ -261,6 +261,8 @@ def _parse_output(
             character=end_column,
         )
 
+        code = data["code"]
+        code_type = data["code_type"]
         diagnostic = lsp.Diagnostic(
             range=lsp.Range(
                 start=start_position,
@@ -270,7 +272,7 @@ def _parse_output(
             severity=_get_severity(
                 data["symbol"], data["code"], data["code_type"], severity
             ),
-            code=f"{data["code"]}/{data["code_type"]}",
+            code=f"{code}/{code_type}",
             source=TOOL_DISPLAY,
         )
         diagnostics.append(diagnostic)
